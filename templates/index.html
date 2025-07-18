@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitor de Sites</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h1>Monitor de Sites</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for categoria, mensagem in messages %}
+          <div class="alert alert-{{ categoria }}">{{ mensagem }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/adicionar" class="mb-4">
+      <div class="input-group">
+        <input type="url" name="url" class="form-control" placeholder="https://exemplo.com" required>
+        <button class="btn btn-primary" type="submit">Adicionar URL</button>
+      </div>
+    </form>
+
+    <ul class="list-group">
+      {% for item in lista_urls %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ item.url }}</strong> -
+            {% if item.status == "Mudou" %}
+              <span class="badge bg-danger">Mudou</span>
+            {% elif item.status == "Sem mudanças" %}
+              <span class="badge bg-success">Sem mudanças</span>
+            {% elif item.status == "Primeira verificação" %}
+              <span class="badge bg-info">Primeira verificação</span>
+            {% elif item.status == "Erro ao acessar" %}
+              <span class="badge bg-warning text-dark">Erro ao acessar</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ item.status }}</span>
+            {% endif %}
+          </div>
+          <form method="POST" action="/remover" style="margin:0;">
+            <input type="hidden" name="url" value="{{ item.url }}">
+            <button type="submit" class="btn btn-danger btn-sm">Remover</button>
+          </form>
+        </li>
+      {% else %}
+        <li class="list-group-item text-muted">Nenhuma URL adicionada ainda.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>
